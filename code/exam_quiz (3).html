@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Экзамен ПМ 11 — ОПБ-413</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--card:#21253a;--border:#2e3350;
+  --accent:#4f8ef7;--accent2:#7c5cfc;
+  --correct:#1db96a;--cbg:#0d2e1c;
+  --wrong:#e84545;--wbg:#2c0f0f;
+  --text:#e8eaf6;--muted:#8a91b4;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;overflow:hidden;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(135deg,#141829,#1e2240);
+  border-bottom:2px solid var(--accent);
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  box-shadow:0 2px 14px rgba(79,142,247,.2);
+}
+#hdr h1{
+  font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:800;
+  background:linear-gradient(90deg,#4f8ef7,#7c5cfc);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  flex:1;
+}
+.sbadge{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:4px 10px;
+  font-size:.7rem;color:var(--muted);font-weight:600;white-space:nowrap;
+}
+.sbadge span{color:var(--text);}
+
+/* TABS */
+#tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;
+  padding:6px 4px;
+  padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));
+}
+.tbtn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--muted);
+  font-size:.58rem;font-family:'Montserrat',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;
+  padding:5px 2px;border-radius:8px;
+  cursor:pointer;
+}
+.tbtn span.ico{font-size:1.15rem;line-height:1;}
+.tbtn.on{color:var(--accent);background:rgba(79,142,247,.1);}
+
+/* SCROLL AREA */
+#wrap{
+  position:fixed;
+  top:52px;left:0;right:0;
+  bottom:calc(58px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+
+/* VIEWS */
+.view{display:none;padding:14px;}
+.view.on{display:block;}
+
+/* QUESTION */
+.qtag{font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:4px;}
+.qnum{font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:10px;font-family:'Montserrat',sans-serif;}
+.qtxt{font-family:'Montserrat',sans-serif;font-size:.98rem;font-weight:700;line-height:1.5;margin-bottom:16px;}
+.opts{display:flex;flex-direction:column;gap:9px;}
+.opt{
+  display:flex;align-items:flex-start;gap:11px;padding:13px 14px;
+  border-radius:12px;border:1.5px solid var(--border);background:var(--card);
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+.opt.correct{border-color:var(--correct)!important;background:var(--cbg)!important;}
+.opt.wrong{border-color:var(--wrong)!important;background:var(--wbg)!important;}
+.opt.show-correct{border-color:var(--correct)!important;background:rgba(29,185,106,.07)!important;}
+.opt.dis{pointer-events:none;}
+.oltr{
+  min-width:26px;height:26px;border-radius:7px;
+  background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);
+  flex-shrink:0;
+}
+.opt.correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.opt.wrong .oltr{background:var(--wrong);border-color:var(--wrong);color:#fff;}
+.opt.show-correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.otxt{font-size:.88rem;line-height:1.42;padding-top:4px;}
+.opt.correct .otxt{color:#6effa8;font-weight:600;}
+.opt.wrong .otxt{color:#ff8a8a;}
+.opt.show-correct .otxt{color:#6effa8;}
+.fb{
+  margin-top:13px;padding:11px 13px;border-radius:10px;
+  font-size:.83rem;font-weight:600;font-family:'Montserrat',sans-serif;display:none;
+}
+.fb.ok{display:block;background:var(--cbg);border:1.5px solid var(--correct);color:#6effa8;}
+.fb.no{display:block;background:var(--wbg);border:1.5px solid var(--wrong);color:#ff8a8a;}
+.navrow{display:flex;gap:10px;margin-top:18px;padding-bottom:6px;}
+.nbtn{
+  flex:1;padding:13px 10px;border-radius:10px;border:none;
+  font-family:'Montserrat',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;
+}
+.nbtn.pri{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;}
+.nbtn.sec{background:var(--card);color:var(--muted);border:1.5px solid var(--border);}
+.nbtn:disabled{opacity:.3;}
+
+/* GRID */
+.gsec{margin-bottom:18px;}
+.gsec-label{
+  font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:7px;border-bottom:1px solid var(--border);margin-bottom:9px;
+}
+.qgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.qbtn{
+  aspect-ratio:1;border:1.5px solid transparent;border-radius:7px;
+  background:var(--card);color:var(--muted);
+  font-size:.68rem;font-weight:700;cursor:pointer;
+  font-family:'Montserrat',sans-serif;
+}
+.qbtn.cur{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.12);}
+.qbtn.ok{background:var(--cbg);border-color:var(--correct);color:var(--correct);}
+.qbtn.no{background:var(--wbg);border-color:var(--wrong);color:var(--wrong);}
+
+/* RESULTS */
+#vres{text-align:center;}
+.rtitle{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.rscore{font-family:'Montserrat',sans-serif;font-size:3.8rem;font-weight:800;color:var(--correct);line-height:1;margin:14px 0;}
+.rsub{color:var(--muted);font-size:.88rem;margin-bottom:20px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.rcard{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;}
+.rcard .rn{font-size:1.8rem;font-weight:800;font-family:'Montserrat',sans-serif;}
+.rcard .rl{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.rcard.g .rn{color:var(--correct);}
+.rcard.r .rn{color:var(--wrong);}
+.ract{display:flex;flex-direction:column;gap:10px;}
+::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>ЭКЗАМЕН ПМ 11 — ОПБ-413</h1>
+  <div style="display:flex;gap:5px;flex-shrink:0;">
+    <div class="sbadge"><span id="ac">0</span>/<span id="tc">80</span></div>
+    <div class="sbadge">✓<span id="cc" style="color:var(--correct)">0</span> ✗<span id="wc" style="color:var(--wrong)">0</span></div>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="vq" class="view on">
+    <div class="qtag" id="qtag"></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="qtxt" id="qtxt"></div>
+    <div class="opts" id="qopts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="navrow">
+      <button class="nbtn sec" id="bprev">← Назад</button>
+      <button class="nbtn pri" id="bnext">Вперёд →</button>
+    </div>
+  </div>
+
+  <div id="vg" class="view">
+    <div class="gsec">
+      <div class="gsec-label">РО 11.2 (1–40)</div>
+      <div class="qgrid" id="gr0"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">РО 11.4 (41–80)</div>
+      <div class="qgrid" id="gr1"></div>
+    </div>
+  </div>
+
+  <div id="vres" class="view">
+    <div class="rtitle">Результаты</div>
+    <div class="rscore" id="rsc"></div>
+    <div class="rsub" id="rsub"></div>
+    <div class="rgrid">
+      <div class="rcard g"><div class="rn" id="rok"></div><div class="rl">Правильных</div></div>
+      <div class="rcard r"><div class="rn" id="rno"></div><div class="rl">Неправильных</div></div>
+      <div class="rcard"><div class="rn" id="rto"></div><div class="rl">Вопросов</div></div>
+      <div class="rcard"><div class="rn" id="rpt" style="color:var(--accent)"></div><div class="rl">Результат</div></div>
+    </div>
+    <div class="ract">
+      <button class="nbtn pri" id="brestart" style="padding:14px;">Пройти заново</button>
+      <button class="nbtn sec" id="breview" style="padding:14px;">Обзор ответов</button>
+    </div>
+  </div>
+</div>
+
+<div id="tabs">
+  <button class="tbtn on" id="t0"><span class="ico">📝</span>Вопрос</button>
+  <button class="tbtn" id="t1"><span class="ico">🔢</span>Все вопросы</button>
+  <button class="tbtn" id="t2"><span class="ico">📊</span>Итоги</button>
+</div>
+
+<script>
+const questions = [
+  // РО 11.2
+  {s:"РО 11.2", t:"Что понимается под пассажирским комплексом на железнодорожном транспорте?", o:["Совокупность грузовых объектов","Совокупность объектов и средств, обеспечивающих обслуживание пассажиров","Только пассажирские вагоны","Административные здания"], c:1},
+  {s:"РО 11.2", t:"Какие объекты относятся к инфраструктуре пассажирского комплекса?", o:["Грузовые терминалы","Вокзалы, платформы, кассовые зоны","Складские помещения","Ремонтные мастерские"], c:1},
+  {s:"РО 11.2", t:"Каково основное назначение пассажирского вокзала?", o:["Хранение подвижного состава","Организация обслуживания пассажиров и поездов","Ремонт локомотивов","Управление грузопотоками"], c:1},
+  {s:"РО 11.2", t:"Что относится к элементам пассажирской инфраструктуры станции?", o:["Маневровые пути","Пассажирские платформы и переходы","Сортировочные горки","Грузовые рампы"], c:1},
+  {s:"РО 11.2", t:"Какая зона вокзала предназначена для продажи билетов?", o:["Техническая зона","Кассово-билетная зона","Служебная зона","Складская зона"], c:1},
+  {s:"РО 11.2", t:"Какую функцию выполняют пассажирские платформы?", o:["Формирование поездов","Обеспечение посадки и высадки пассажиров","Хранение грузов","Ремонт вагонов"], c:1},
+  {s:"РО 11.2", t:"Что относится к инженерным системам пассажирского комплекса?", o:["Подвижной состав","Электроснабжение, водоснабжение, вентиляция","График движения","Кадровый состав"], c:1},
+  {s:"РО 11.2", t:"Какой элемент обеспечивает безопасность пассажиров на вокзале?", o:["Кассовые терминалы","Системы видеонаблюдения и оповещения","Складские помещения","Кабинеты персонала"], c:1},
+  {s:"РО 11.2", t:"Какая служба отвечает за организацию пассажирских перевозок на станции?", o:["Грузовая служба","Пассажирская служба","Локомотивная служба","Ремонтная служба"], c:1},
+  {s:"РО 11.2", t:"Что включает технология работы пассажирского комплекса?", o:["Только расписание поездов","Совокупность операций по обслуживанию пассажиров и поездов","Финансовую отчетность","Кадровый учет"], c:1},
+  {s:"РО 11.2", t:"Какой процесс относится к технологии обслуживания пассажиров?", o:["Маневровая работа","Продажа билетов и информирование пассажиров","Ремонт путей","Формирование составов"], c:1},
+  {s:"РО 11.2", t:"Какую роль играет расписание движения поездов в работе пассажирского комплекса?", o:["Не используется","Определяет организацию пассажиропотоков","Влияет только на ремонт","Используется для отчетности"], c:1},
+  {s:"РО 11.2", t:"Что обеспечивает рациональную организацию пассажиропотоков на вокзале?", o:["Складские зоны","Планировка помещений и навигация","Служебные кабинеты","Архивы"], c:1},
+  {s:"РО 11.2", t:"Какой показатель характеризует пропускную способность пассажирского комплекса?", o:["Количество сотрудников","Число пассажиров, обслуживаемых за единицу времени","Уровень шума","Площадь офисов"], c:1},
+  {s:"РО 11.2", t:"Что относится к средствам информирования пассажиров?", o:["Служебные документы","Электронные табло и звуковые объявления","Отчеты","Кадровые приказы"], c:1},
+  {s:"РО 11.2", t:"Какую функцию выполняют залы ожидания?", o:["Формирование поездов","Обеспечение комфортного пребывания пассажиров","Хранение багажа","Ремонт оборудования"], c:1},
+  {s:"РО 11.2", t:"Какой элемент относится к инфраструктуре обслуживания маломобильных пассажиров?", o:["Грузовые рампы","Пандусы, лифты, тактильные указатели","Служебные коридоры","Маневровые пути"], c:1},
+  {s:"РО 11.2", t:"Что включает технология посадки пассажиров в поезд?", o:["Только проверку билетов","Организацию доступа на платформу и контроль безопасности","Маневровые операции","Ремонт подвижного состава"], c:1},
+  {s:"РО 11.2", t:"Какая служба обеспечивает чистоту и порядок в пассажирских зонах?", o:["Локомотивная","Хозяйственная служба","Диспетчерская","Грузовая"], c:1},
+  {s:"РО 11.2", t:"Что относится к объектам коммерческого обслуживания пассажиров?", o:["Кабинеты персонала","Магазины, кафе, камеры хранения","Ремонтные зоны","Технические помещения"], c:1},
+  {s:"РО 11.2", t:"Какую роль играет багажное обслуживание в пассажирском комплексе?", o:["Не используется","Обеспечивает прием, хранение и выдачу багажа","Только финансовую","Архивную"], c:1},
+  {s:"РО 11.2", t:"Какой документ регламентирует технологию работы пассажирского комплекса?", o:["Финансовый отчет","Технологический процесс работы станции","График отпусков","План ремонта"], c:1},
+  {s:"РО 11.2", t:"Что обеспечивает безопасность движения пассажиров по вокзалу?", o:["Грузовые пути","Переходы, ограждения и знаки безопасности","Служебные входы","Архивы"], c:1},
+  {s:"РО 11.2", t:"Какой показатель используется для оценки качества работы пассажирского комплекса?", o:["Объем грузооборота","Уровень удовлетворенности пассажиров","Количество складов","Число локомотивов"], c:1},
+  {s:"РО 11.2", t:"Какую функцию выполняют автоматизированные системы в пассажирском комплексе?", o:["Исключают контроль","Поддерживают управление и обслуживание пассажиров","Используются только для отчетов","Усложняют процессы"], c:1},
+  {s:"РО 11.2", t:"Что относится к технологии обслуживания поездов на пассажирской станции?", o:["Грузовые операции","Прием, отправление и стоянка пассажирских поездов","Хранение материалов","Финансовый учет"], c:1},
+  {s:"РО 11.2", t:"Какой фактор учитывается при проектировании пассажирской инфраструктуры?", o:["Цвет зданий","Объем и структура пассажиропотоков","Личные предпочтения персонала","Возраст сотрудников"], c:1},
+  {s:"РО 11.2", t:"Что обеспечивает согласованную работу всех служб пассажирского комплекса?", o:["Разрозненные инструкции","Четко установленная технология работы","Отсутствие регламентов","Только опыт персонала"], c:1},
+  {s:"РО 11.2", t:"Какую роль играет диспетчерское управление в пассажирском комплексе?", o:["Не используется","Координирует работу служб при движении поездов","Выполняет ремонт","Ведет бухгалтерию"], c:1},
+  {s:"РО 11.2", t:"Какой элемент относится к внешней инфраструктуре пассажирского комплекса?", o:["Кассовый зал","Привокзальная площадь и подъездные пути","Служебные кабинеты","Архив"], c:1},
+  {s:"РО 11.2", t:"Что включает технология информирования пассажиров?", o:["Только печатные объявления","Оповещение о расписании, изменениях и услугах","Кадровые данные","Финансовые отчеты"], c:1},
+  {s:"РО 11.2", t:"Какую функцию выполняют камеры хранения?", o:["Обслуживание поездов","Временное хранение багажа пассажиров","Продажу билетов","Информирование"], c:1},
+  {s:"РО 11.2", t:"Какой показатель характеризует эффективность использования пассажирской инфраструктуры?", o:["Количество зданий","Соотношение пропускной способности и фактической загрузки","Уровень освещенности","Число сотрудников"], c:1},
+  {s:"РО 11.2", t:"Что относится к средствам навигации пассажиров?", o:["Служебные приказы","Указатели, схемы и информационные стенды","Отчеты","Архивы"], c:1},
+  {s:"РО 11.2", t:"Какую задачу решает технология работы пассажирского комплекса?", o:["Только финансовую","Обеспечение бесперебойного и безопасного обслуживания пассажиров","Исключительно кадровую","Архивную"], c:1},
+  {s:"РО 11.2", t:"Какой фактор влияет на организацию пассажирских потоков?", o:["Цвет интерьера","Расписание движения поездов","Возраст здания","Количество офисов"], c:1},
+  {s:"РО 11.2", t:"Что обеспечивает комфорт пассажиров в пассажирском комплексе?", o:["Служебные помещения","Условия ожидания, доступность услуг и информация","Грузовые зоны","Архив"], c:1},
+  {s:"РО 11.2", t:"Какую роль играет технология работы при пиковых нагрузках?", o:["Не влияет","Обеспечивает устойчивую работу комплекса","Усложняет обслуживание","Снижает безопасность"], c:1},
+  {s:"РО 11.2", t:"Какой элемент относится к обеспечению транспортной безопасности?", o:["Коммерческие площади","Досмотровые зоны и системы контроля","Камеры хранения","Залы ожидания"], c:1},
+  {s:"РО 11.2", t:"Какова роль пассажирского комплекса в системе пассажирских перевозок?", o:["Второстепенная","Ключевая для организации и качества обслуживания пассажиров","Используется только как здание","Не влияет на перевозки"], c:1},
+  // РО 11.4
+  {s:"РО 11.4", t:"Что понимается под сервис-центром по обслуживанию пассажиров?", o:["Подразделение по ремонту подвижного состава","Структурное подразделение, обеспечивающее комплекс услуг пассажирам","Грузовой терминал","Административный офис"], c:1},
+  {s:"РО 11.4", t:"Какова основная цель работы сервис-центра?", o:["Увеличение отчетности","Повышение качества и доступности пассажирских услуг","Снижение пассажиропотока","Исключение информирования"], c:1},
+  {s:"РО 11.4", t:"Какие услуги предоставляются сервис-центрами пассажирам?", o:["Только продажа билетов","Информационные, сервисные и дополнительные услуги","Ремонт подвижного состава","Кадровые услуги"], c:1},
+  {s:"РО 11.4", t:"Какой принцип лежит в основе организации работы сервис-центра?", o:["Минимальная информированность пассажиров","Ориентация на потребности пассажиров","Усложнение процедур","Разрозненность функций"], c:1},
+  {s:"РО 11.4", t:"Какие подразделения взаимодействуют с сервис-центром?", o:["Только бухгалтерия","Кассовые, справочные и диспетчерские службы","Только ремонтные службы","Грузовые подразделения"], c:1},
+  {s:"РО 11.4", t:"Какая информация должна быть доступна сотрудникам сервис-центра?", o:["Только архивные данные","Актуальная информация о расписании и услугах","Финансовые отчеты","Личные данные персонала"], c:1},
+  {s:"РО 11.4", t:"Какую роль играют автоматизированные системы в работе сервис-центра?", o:["Исключают контроль","Поддерживают обслуживание и информирование пассажиров","Используются только для отчетности","Усложняют процессы"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает эффективную организацию работы сервис-центра?", o:["Отсутствие регламентов","Четкое распределение функций и обязанностей персонала","Случайный график работы","Минимальное взаимодействие"], c:1},
+  {s:"РО 11.4", t:"Какой показатель используется для оценки качества работы сервис-центра?", o:["Количество сотрудников","Уровень удовлетворенности пассажиров","Площадь помещений","Объем отчетности"], c:1},
+  {s:"РО 11.4", t:"Какие требования предъявляются к персоналу сервис-центра?", o:["Только технические навыки","Коммуникативные навыки и знание услуг","Отсутствие обучения","Минимальная ответственность"], c:1},
+  {s:"РО 11.4", t:"Что включает организация рабочего места сотрудника сервис-центра?", o:["Только стол и стул","Оснащение средствами связи и доступа к информационным системам","Архив документов","Складское оборудование"], c:1},
+  {s:"РО 11.4", t:"Какой режим работы сервис-центра считается оптимальным?", o:["Ограниченный","Соответствующий пассажиропотоку и расписанию движения","Только дневной","Нерегулярный"], c:1},
+  {s:"РО 11.4", t:"Какую функцию выполняет сервис-центр при возникновении нештатных ситуаций?", o:["Не участвует","Информирует пассажиров и координирует действия","Выполняет ремонт","Ведет финансовый учет"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает оперативное информирование пассажиров?", o:["Бумажные отчеты","Использование электронных систем и средств связи","Архивные данные","Личные сообщения"], c:1},
+  {s:"РО 11.4", t:"Какая услуга относится к дополнительным услугам сервис-центра?", o:["Контроль движения поездов","Заказ такси, помощь маломобильным пассажирам","Ремонт путей","Кадровый учет"], c:1},
+  {s:"РО 11.4", t:"Какую роль играет сервис-центр в формировании имиджа транспортной организации?", o:["Не влияет","Формирует уровень доверия и лояльности пассажиров","Выполняет только справочную функцию","Работает изолированно"], c:1},
+  {s:"РО 11.4", t:"Какой элемент не относится к функциям сервис-центра?", o:["Информирование","Консультирование","Техническое обслуживание подвижного состава","Прием обращений пассажиров"], c:2},
+  {s:"РО 11.4", t:"Что позволяет автоматизированный учет обращений пассажиров?", o:["Игнорировать жалобы","Анализировать проблемы и улучшать качество обслуживания","Увеличивать отчетность","Снижать прозрачность"], c:1},
+  {s:"РО 11.4", t:"Какая информация предоставляется пассажирам через сервис-центр?", o:["Внутренние приказы","Сведения о расписании, услугах и правилах перевозок","Кадровые данные","Финансовые отчеты"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает взаимодействие сервис-центра с другими службами?", o:["Разрозненные действия","Согласованность и непрерывность обслуживания пассажиров","Дублирование функций","Отсутствие ответственности"], c:1},
+  {s:"РО 11.4", t:"Какую роль играет стандарт обслуживания в работе сервис-центра?", o:["Ограничивает персонал","Устанавливает единые требования к качеству услуг","Не используется","Снижает гибкость"], c:1},
+  {s:"РО 11.4", t:"Какая задача решается при планировании работы сервис-центра?", o:["Архивирование документов","Определение численности персонала и графиков работы","Ремонт оборудования","Финансовый аудит"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает контроль качества обслуживания пассажиров?", o:["Отсутствие обратной связи","Анализ обращений и отзывов пассажиров","Только личный опыт","Архивные отчеты"], c:1},
+  {s:"РО 11.4", t:"Какую функцию выполняет сервис-центр при обслуживании маломобильных пассажиров?", o:["Не участвует","Организует сопровождение и оказание помощи","Выполняет ремонт","Ведет учет кадров"], c:1},
+  {s:"РО 11.4", t:"Что позволяет использование единого окна обслуживания?", o:["Увеличить очереди","Сократить время обслуживания пассажиров","Снизить доступность услуг","Усложнить процессы"], c:1},
+  {s:"РО 11.4", t:"Какая информация необходима для эффективной работы сервис-центра?", o:["Только архивная","Данные о пассажиропотоках и востребованности услуг","Финансовые отчеты","Кадровые документы"], c:1},
+  {s:"РО 11.4", t:"Какой результат достигается при правильной организации сервис-центра?", o:["Рост жалоб","Повышение качества и оперативности обслуживания","Снижение доверия","Увеличение простоев"], c:1},
+  {s:"РО 11.4", t:"Какую роль играет обучение персонала сервис-центра?", o:["Не требуется","Обеспечивает профессиональное и вежливое обслуживание","Увеличивает затраты без эффекта","Снижает качество"], c:1},
+  {s:"РО 11.4", t:"Какой элемент относится к материально-техническому обеспечению сервис-центра?", o:["Кадровые приказы","Компьютерная техника и средства связи","Архив","Финансовые отчеты"], c:1},
+  {s:"РО 11.4", t:"Какой показатель отражает эффективность работы сервис-центра?", o:["Площадь помещений","Скорость обслуживания и количество положительных отзывов","Число сотрудников","Объем документации"], c:1},
+  {s:"РО 11.4", t:"Какую функцию выполняет сервис-центр при изменении расписания?", o:["Не информирует","Оперативно доводит информацию до пассажиров","Выполняет ремонт","Ведет учет"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает доступность услуг сервис-центра?", o:["Ограниченные часы работы","Удобное расположение и многоканальные способы обращения","Только личный прием","Минимальное информирование"], c:1},
+  {s:"РО 11.4", t:"Какая форма обратной связи используется в сервис-центрах?", o:["Только устная","Книги отзывов, электронные обращения, горячие линии","Архивные отчеты","Служебные записки"], c:1},
+  {s:"РО 11.4", t:"Какую задачу решает автоматизация процессов в сервис-центре?", o:["Увеличивает нагрузку","Повышает качество и скорость обслуживания","Снижает прозрачность","Исключает контроль"], c:1},
+  {s:"РО 11.4", t:"Что обеспечивает координацию работы персонала сервис-центра?", o:["Случайные указания","Регламенты и инструкции по обслуживанию","Отсутствие правил","Личный опыт"], c:1},
+  {s:"РО 11.4", t:"Какой фактор влияет на организацию работы сервис-центра?", o:["Цвет интерьера","Интенсивность пассажиропотока","Возраст здания","Количество офисов"], c:1},
+  {s:"РО 11.4", t:"Какую роль играет сервис-центр в обеспечении транспортной доступности?", o:["Не влияет","Способствует удобству и доступности услуг для пассажиров","Выполняет только справочную функцию","Работает изолированно"], c:1},
+  {s:"РО 11.4", t:"Что является результатом эффективной работы сервис-центра?", o:["Рост конфликтов","Снижение качества","Повышение удовлетворенности пассажиров","Увеличение затрат"], c:2},
+  {s:"РО 11.4", t:"Какой элемент важен для интеграции сервис-центра в систему обслуживания пассажиров?", o:["Разрозненные данные","Единые информационные системы и стандарты","Бумажные носители","Отсутствие связи"], c:1},
+  {s:"РО 11.4", t:"Какую роль играет сервис-центр в системе пассажирского обслуживания?", o:["Второстепенную","Ключевую для координации и качества обслуживания пассажиров","Используется только для справок","Не влияет на перевозки"], c:1},
+];
+
+var L=['а','б','в','г','д'];
+var cur=0, ans=new Array(questions.length).fill(null);
+
+function init(){
+    buildGrid("gr0", 0, 40);
+  buildGrid("gr1", 40, 80);
+
+  render();
+  stats();
+
+  // Tab buttons - use addEventListener for Safari compatibility
+  document.getElementById('t0').addEventListener('click', function(){ showView('vq'); });
+  document.getElementById('t1').addEventListener('click', function(){ showView('vg'); });
+  document.getElementById('t2').addEventListener('click', function(){ calcResults(); showView('vres'); });
+  document.getElementById('bprev').addEventListener('click', function(){ if(cur>0){cur--;render();} });
+  document.getElementById('bnext').addEventListener('click', function(){ if(cur<questions.length-1){cur++;render();} });
+  document.getElementById('brestart').addEventListener('click', restart);
+  document.getElementById('breview').addEventListener('click', function(){ cur=0; render(); showView('vq'); });
+}
+
+function showView(id){
+  ['vq','vg','vres'].forEach(function(v){ document.getElementById(v).classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+  ['t0','t1','t2'].forEach(function(t){ document.getElementById(t).classList.remove('on'); });
+  if(id==='vq') document.getElementById('t0').classList.add('on');
+  if(id==='vg') document.getElementById('t1').classList.add('on');
+  if(id==='vres') document.getElementById('t2').classList.add('on');
+  document.getElementById('wrap').scrollTop=0;
+}
+
+function buildGrid(id, from, to){
+  var g=document.getElementById(id); if(!g)return;
+  g.innerHTML='';
+  for(var i=from;i<to;i++){
+    (function(idx){
+      var b=document.createElement('button');
+      b.className='qbtn'; b.textContent=idx+1; b.id='qb'+idx;
+      b.addEventListener('click', function(){ cur=idx; render(); showView('vq'); });
+      g.appendChild(b);
+    })(i);
+  }
+}
+
+function render(){
+  var q=questions[cur];
+  document.getElementById('qtag').textContent=q.s;
+  document.getElementById('qnum').textContent='Вопрос '+(cur+1)+' из '+questions.length;
+  document.getElementById('qtxt').textContent=q.t;
+  var a=ans[cur];
+  var fb=document.getElementById('fb'); fb.className='fb';
+  var cont=document.getElementById('qopts'); cont.innerHTML='';
+  for(var i=0;i<q.o.length;i++){
+    (function(i){
+      var d=document.createElement('div'); d.className='opt';
+      if(a!==null){
+        d.classList.add('dis');
+        if(i===q.c) d.classList.add(a===i?'correct':'show-correct');
+        if(a===i&&i!==q.c) d.classList.add('wrong');
+      }
+      d.innerHTML='<span class="oltr">'+L[i]+'</span><span class="otxt">'+q.o[i]+'</span>';
+      if(a===null){
+        d.addEventListener('click', function(){ pick(i); });
+      }
+      cont.appendChild(d);
+    })(i);
+  }
+  if(a!==null){
+    if(a===q.c){ fb.className='fb ok'; fb.textContent='✅ Правильно!'; }
+    else{ fb.className='fb no'; fb.innerHTML='❌ Неправильно. Правильный ответ: <strong>'+L[q.c]+') '+q.o[q.c]+'</strong>'; }
+  }
+  document.getElementById('bprev').disabled=(cur===0);
+  document.getElementById('bnext').disabled=(cur===questions.length-1);
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('cur'); });
+  var ab=document.getElementById('qb'+cur); if(ab) ab.classList.add('cur');
+  stats();
+}
+
+function pick(i){
+  if(ans[cur]!==null) return;
+  ans[cur]=i;
+  var b=document.getElementById('qb'+cur);
+  if(b){ b.classList.remove('cur'); b.classList.add(i===questions[cur].c?'ok':'no'); }
+  render();
+  var done=ans.filter(function(a){return a!==null;}).length;
+  if(done===questions.length){ setTimeout(function(){ calcResults(); showView('vres'); },1000); }
+}
+
+function stats(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  document.getElementById('ac').textContent=done;
+  document.getElementById('cc').textContent=ok;
+  document.getElementById('wc').textContent=done-ok;
+}
+
+function calcResults(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  var pct=Math.round(ok/questions.length*100);
+  document.getElementById('rsc').textContent=pct+'%';
+  document.getElementById('rsub').textContent=pct>=70?'🎉 Отлично! Вы сдали!':'📚 Нужно повторить материал';
+  document.getElementById('rok').textContent=ok;
+  document.getElementById('rno').textContent=done-ok;
+  document.getElementById('rto').textContent=questions.length;
+  document.getElementById('rpt').textContent=pct+'%';
+}
+
+function restart(){
+  ans=new Array(questions.length).fill(null);
+  cur=0;
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('ok','no'); });
+  render(); stats(); showView('vq');
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Тесты к экзамену ПМ 11 — ОПБ-413</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--card:#21253a;--border:#2e3350;
+  --accent:#4f8ef7;--accent2:#7c5cfc;
+  --correct:#1db96a;--cbg:#0d2e1c;
+  --wrong:#e84545;--wbg:#2c0f0f;
+  --text:#e8eaf6;--muted:#8a91b4;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;overflow:hidden;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(135deg,#141829,#1e2240);
+  border-bottom:2px solid var(--accent);
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  box-shadow:0 2px 14px rgba(79,142,247,.2);
+}
+#hdr h1{
+  font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:800;
+  background:linear-gradient(90deg,#4f8ef7,#7c5cfc);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  flex:1;
+}
+.sbadge{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:4px 10px;
+  font-size:.7rem;color:var(--muted);font-weight:600;white-space:nowrap;
+}
+.sbadge span{color:var(--text);}
+
+/* TABS */
+#tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;
+  padding:6px 4px;
+  padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));
+}
+.tbtn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--muted);
+  font-size:.58rem;font-family:'Montserrat',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;
+  padding:5px 2px;border-radius:8px;
+  cursor:pointer;
+}
+.tbtn span.ico{font-size:1.15rem;line-height:1;}
+.tbtn.on{color:var(--accent);background:rgba(79,142,247,.1);}
+
+/* SCROLL AREA */
+#wrap{
+  position:fixed;
+  top:52px;left:0;right:0;
+  bottom:calc(58px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+
+/* VIEWS */
+.view{display:none;padding:14px;}
+.view.on{display:block;}
+
+/* QUESTION */
+.qtag{font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:4px;}
+.qnum{font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:10px;font-family:'Montserrat',sans-serif;}
+.qtxt{font-family:'Montserrat',sans-serif;font-size:.98rem;font-weight:700;line-height:1.5;margin-bottom:16px;}
+.opts{display:flex;flex-direction:column;gap:9px;}
+.opt{
+  display:flex;align-items:flex-start;gap:11px;padding:13px 14px;
+  border-radius:12px;border:1.5px solid var(--border);background:var(--card);
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+.opt.correct{border-color:var(--correct)!important;background:var(--cbg)!important;}
+.opt.wrong{border-color:var(--wrong)!important;background:var(--wbg)!important;}
+.opt.show-correct{border-color:var(--correct)!important;background:rgba(29,185,106,.07)!important;}
+.opt.dis{pointer-events:none;}
+.oltr{
+  min-width:26px;height:26px;border-radius:7px;
+  background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);
+  flex-shrink:0;
+}
+.opt.correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.opt.wrong .oltr{background:var(--wrong);border-color:var(--wrong);color:#fff;}
+.opt.show-correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.otxt{font-size:.88rem;line-height:1.42;padding-top:4px;}
+.opt.correct .otxt{color:#6effa8;font-weight:600;}
+.opt.wrong .otxt{color:#ff8a8a;}
+.opt.show-correct .otxt{color:#6effa8;}
+.fb{
+  margin-top:13px;padding:11px 13px;border-radius:10px;
+  font-size:.83rem;font-weight:600;font-family:'Montserrat',sans-serif;display:none;
+}
+.fb.ok{display:block;background:var(--cbg);border:1.5px solid var(--correct);color:#6effa8;}
+.fb.no{display:block;background:var(--wbg);border:1.5px solid var(--wrong);color:#ff8a8a;}
+.navrow{display:flex;gap:10px;margin-top:18px;padding-bottom:6px;}
+.nbtn{
+  flex:1;padding:13px 10px;border-radius:10px;border:none;
+  font-family:'Montserrat',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;
+}
+.nbtn.pri{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;}
+.nbtn.sec{background:var(--card);color:var(--muted);border:1.5px solid var(--border);}
+.nbtn:disabled{opacity:.3;}
+
+/* GRID */
+.gsec{margin-bottom:18px;}
+.gsec-label{
+  font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:7px;border-bottom:1px solid var(--border);margin-bottom:9px;
+}
+.qgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.qbtn{
+  aspect-ratio:1;border:1.5px solid transparent;border-radius:7px;
+  background:var(--card);color:var(--muted);
+  font-size:.68rem;font-weight:700;cursor:pointer;
+  font-family:'Montserrat',sans-serif;
+}
+.qbtn.cur{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.12);}
+.qbtn.ok{background:var(--cbg);border-color:var(--correct);color:var(--correct);}
+.qbtn.no{background:var(--wbg);border-color:var(--wrong);color:var(--wrong);}
+
+/* RESULTS */
+#vres{text-align:center;}
+.rtitle{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.rscore{font-family:'Montserrat',sans-serif;font-size:3.8rem;font-weight:800;color:var(--correct);line-height:1;margin:14px 0;}
+.rsub{color:var(--muted);font-size:.88rem;margin-bottom:20px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.rcard{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;}
+.rcard .rn{font-size:1.8rem;font-weight:800;font-family:'Montserrat',sans-serif;}
+.rcard .rl{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.rcard.g .rn{color:var(--correct);}
+.rcard.r .rn{color:var(--wrong);}
+.ract{display:flex;flex-direction:column;gap:10px;}
+::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>ТЕСТЫ К ЭКЗАМЕНУ ПМ 11 — ОПБ-413</h1>
+  <div style="display:flex;gap:5px;flex-shrink:0;">
+    <div class="sbadge"><span id="ac">0</span>/<span id="tc">55</span></div>
+    <div class="sbadge">✓<span id="cc" style="color:var(--correct)">0</span> ✗<span id="wc" style="color:var(--wrong)">0</span></div>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="vq" class="view on">
+    <div class="qtag" id="qtag"></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="qtxt" id="qtxt"></div>
+    <div class="opts" id="qopts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="navrow">
+      <button class="nbtn sec" id="bprev">← Назад</button>
+      <button class="nbtn pri" id="bnext">Вперёд →</button>
+    </div>
+  </div>
+
+  <div id="vg" class="view">
+    <div class="gsec">
+      <div class="gsec-label">Глава 1 — Термины (1–8)</div>
+      <div class="qgrid" id="gr0"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">Глава 2 — Продажа билетов (9–35)</div>
+      <div class="qgrid" id="gr1"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">Глава 15 — Возврат платежей (36–45)</div>
+      <div class="qgrid" id="gr2"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">Глава 13 — Хранение багажа (46–55)</div>
+      <div class="qgrid" id="gr3"></div>
+    </div>
+  </div>
+
+  <div id="vres" class="view">
+    <div class="rtitle">Результаты</div>
+    <div class="rscore" id="rsc"></div>
+    <div class="rsub" id="rsub"></div>
+    <div class="rgrid">
+      <div class="rcard g"><div class="rn" id="rok"></div><div class="rl">Правильных</div></div>
+      <div class="rcard r"><div class="rn" id="rno"></div><div class="rl">Неправильных</div></div>
+      <div class="rcard"><div class="rn" id="rto"></div><div class="rl">Вопросов</div></div>
+      <div class="rcard"><div class="rn" id="rpt" style="color:var(--accent)"></div><div class="rl">Результат</div></div>
+    </div>
+    <div class="ract">
+      <button class="nbtn pri" id="brestart" style="padding:14px;">Пройти заново</button>
+      <button class="nbtn sec" id="breview" style="padding:14px;">Обзор ответов</button>
+    </div>
+  </div>
+</div>
+
+<div id="tabs">
+  <button class="tbtn on" id="t0"><span class="ico">📝</span>Вопрос</button>
+  <button class="tbtn" id="t1"><span class="ico">🔢</span>Все вопросы</button>
+  <button class="tbtn" id="t2"><span class="ico">📊</span>Итоги</button>
+</div>
+
+<script>
+const questions = [
+  {s:"Глава 1 — Термины", t:"Что такое специальный поезд?", o:["Поезд, предназначенный для перевозки грузов","Поезд, следующий по особому маршруту","Поезд, назначаемый в рейс по специальным или разовым расписаниям по заявке физического или юридического лица","Поезд, сформированный из вагонов повышенной комфортности","Поезд, курсирующий только в пригородном сообщении"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое специальный вагон?", o:["Вагон, предназначенный для перевозки специальных грузов","Вагон, оборудованный специальной техникой","Вагон, назначенный в рейс сверх установленной схемы формирования поезда или взамен вагона регулярного сообщения по заказу физического или юридического лица","Вагон, курсирующий только в составе специальных поездов","Вагон, предназначенный для перевозки только пассажиров с ограниченными возможностями"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое остановочный пункт?", o:["Железнодорожная станция с развитой инфраструктурой","Пункт, где осуществляется остановка грузовых поездов","Пункт, предназначенный исключительно для посадки и высадки пассажиров пассажирского поезда","Пункт, где осуществляется техническое обслуживание поездов","Любое место остановки поезда"], c:2},
+  {s:"Глава 1 — Термины", t:"Что входит в стоимость проезда пассажиров?", o:["Только стоимость билета","Только стоимость плацкарты","Стоимость плацкарты и билета","Стоимость билета и дополнительные сервисные услуги","Стоимость плацкарты и страховка"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое скоростной поезд?", o:["Поезд, курсирующий со скоростью до 120 км/ч","Поезд, осуществляющий много остановок","Состав поезда, сформированный из вагонов, предназначенных для курсирования со скоростями до 200 км/ч, с минимальным числом остановок","Поезд, курсирующий только в пригородном сообщении","Поезд, сформированный из вагонов с местами для сидения"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое пригородный поезд?", o:["Поезд, курсирующий между крупными городами","Поезд, сформированный из вагонов повышенной комфортности","Поезд, сформированный из моторвагонного подвижного состава или пассажирских вагонов с местами для сидения, курсирующий в межобластном, межрайонном и пригородном сообщениях","Поезд, сформированный из вагонов-ресторанов","Поезд, курсирующий только в ночное время"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое посадочный талон?", o:["Билет, оформленный в бумажной форме","Документ, подтверждающий право на проезд в вагоне повышенной комфортности","Документ, удостоверяющий факт посадки и проезда пассажира в поезд по электронному проездному документу","Документ, выдаваемый при покупке билета на специальный поезд","Документ, подтверждающий право на бесплатный проезд"], c:2},
+  {s:"Глава 1 — Термины", t:"Что такое вагон беспересадочного сообщения?", o:["Вагон, курсирующий без остановок","Вагон, курсирующий только в составе скоростных поездов","Вагон, курсирующий с переприцепкой в составах двух и более поездов","Вагон, предназначенный для перевозки грузов и пассажиров одновременно","Вагон, курсирующий только в международном сообщении"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Чем удостоверяется заключение договора перевозки пассажира?", o:["Паспортом пассажира","Посадочным талоном","Проездным документом (билетом)","Справкой от проводника","Заявлением пассажира"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Где производится продажа проездных документов (билетов)?", o:["Только в билетных кассах на вокзалах","Только через интернет-ресурсы","Только у проводников в пригородных поездах","В железнодорожных билетных кассах, пассажирских агентствах, электронных терминалах и интернет-ресурсах","Только в специализированных кассах"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"В каких случаях допускается продажа проездных документов (билетов) проводниками?", o:["Во всех пассажирских поездах","В поездах повышенной комфортности","В поездах дальнего следования","В пригородных поездах и общих вагонах пассажирских поездов на станциях, где отсутствуют билетные кассы","В любых поездах по усмотрению проводника"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"С какого времени начинается предварительная продажа проездных документов (билетов) на пассажирские поезда?", o:["от 45 до 1 суток","от 30 до 10 суток","за 25 суток","за 24 часа","от 10 до 1 суток"], c:0},
+  {s:"Глава 2 — Продажа билетов", t:"За сколько минут до отправления поезда прекращается продажа проездных документов (билетов)?", o:["За 5 минут","За 10 минут","За 15 минут","За 20 минут","За 30 минут"], c:1},
+  {s:"Глава 2 — Продажа билетов", t:"За сколько суток до отправления поезда начинается предварительная продажа билетов на пригородные поезда?", o:["За 30 суток","За 20 суток","За 10 суток","За 7 суток","За 5 суток"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"До какого времени осуществляется предварительная продажа билетов на пассажирские поезда?", o:["До 2 суток до отправления","До 3 суток до отправления","До 5 суток до отправления","До 1 суток до отправления","До отправления поезда"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"До какой станции пассажир может приобрести билет?", o:["До любой станции в пределах страны","До станции формирования поезда","До любой станции, открытой для пассажирских операций, по маршруту следования поезда","До любой крупной станции","До станции, указанной в паспорте пассажира"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Что происходит при отсутствии прямого поезда до станции назначения пассажира?", o:["Пассажиру отказывают в продаже билета","Пассажир должен самостоятельно найти другой поезд","Оформляется второй билет на согласованный поезд от станции пересадки","Пассажир может воспользоваться другим видом транспорта","Пассажир должен ждать следующий прямой поезд"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Какая минимальная разница должна быть между прибытием и отправлением согласованных поездов в пунктах пересадки?", o:["30 минут","1 час","1,5 часа","2 часа","3 часа"], c:1},
+  {s:"Глава 2 — Продажа билетов", t:"За сколько часов до отправления поезда начинается продажа билетов в вагоны беспересадочного сообщения пассажирам, следующим до любой станции, расположенной до пункта отклонения поезда?", o:["24 часа","48 часов","72 часа","96 часов","120 часов"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Что происходит, если в поезде нет свободных мест?", o:["Пассажиру предлагают приобрести билет на стоячее место","Билетная касса отказывает в продаже билета","Пассажир может приобрести билет на место проводника","Пассажир может приобрести билет на место в служебном купе","Пассажиру предлагают приобрести билет на другой поезд"], c:1},
+  {s:"Глава 2 — Продажа билетов", t:"Сколько мест может приобрести пассажир в одном купе?", o:["Не более двух","Не более трех","Все места в купе","Одно место","По усмотрению кассира"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Сколько мест на один поезд может оформить одно лицо (кроме специальных перевозок)?", o:["Одно место","Два места","Три места","Четыре места","Неограниченное количество мест"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"Допускается ли продажа билетов сверх имеющегося в вагоне количества мест?", o:["Нет, не допускается","Да, по усмотрению начальника поезда","Да, если пассажир согласен ехать стоя","Да, в случае крайней необходимости","Да, если пассажир оплачивает двойной тариф"], c:0},
+  {s:"Глава 2 — Продажа билетов", t:"Какие документы не требуется предъявлять при оформлении билетов на пригородные поезда (кроме вагонов электропоездов повышенной комфортности)?", o:["Паспорт","Удостоверение личности","Документы, удостоверяющие личность пассажира","Военный билет","Свидетельство о рождении"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Какие документы необходимо указать при оформлении билетов на пригородные поезда через интернет-ресурсы?", o:["Только ФИО пассажира","Только номер паспорта","Только ИИН пассажира","ФИО пассажира, ИИН, номер одного из документов, удостоверяющих личность","Любые документы по усмотрению пассажира"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"Какой документ необходимо предъявить для оформления льготного или бесплатного проездного документа (билета)?", o:["Паспорт пассажира","Удостоверение личности пассажира","Документ, дающий право на льготы или бесплатный проезд","Справку от врача","Любой документ по усмотрению кассира"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"В каком размере устанавливается льгота на проезд для лиц всех групп инвалидности и детей-инвалидов по социально значимым сообщениям?", o:["25% от стоимости билета","50% от стоимости билета","75% от стоимости билета","100% от стоимости билета","По усмотрению перевозчика"], c:1},
+  {s:"Глава 2 — Продажа билетов", t:"Могут ли льготные и бесплатные проездные документы (билеты) быть переданы другим лицам?", o:["Нет, не подлежат передаче","Да, с разрешения начальника поезда","Да, если пассажир предъявит доверенность","Да, с разрешения проводника","Да, если пассажир оплатит разницу в стоимости"], c:0},
+  {s:"Глава 2 — Продажа билетов", t:"Что необходимо проверить пассажиру при получении оформленного проездного документа (билета)?", o:["Только номер поезда и дату отправления","Только ФИО пассажира","Только номер документа пассажира","ФИО пассажира, ИИН, номер документа пассажира, номер поезда и дату отправления","Любые данные по усмотрению пассажира"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"В каком случае пассажир может переоформить билет на поезд, отходящий ранее?", o:["Если пассажир опоздал на свой поезд","Если пассажир хочет ехать в другом вагоне","При наличии свободных мест в поезде, отходящем ранее","По любой причине, указанной пассажиром","По усмотрению кассира"], c:2},
+  {s:"Глава 2 — Продажа билетов", t:"Допускается ли переоформление билета на другого пассажира?", o:["Нет, не допускается","Да, с разрешения начальника поезда","Да, если пассажир предъявит доверенность","Да, с разрешения проводника","Да, если пассажир оплатит разницу в стоимости"], c:0},
+  {s:"Глава 2 — Продажа билетов", t:"В каких случаях допускается переоформление билета без изменения фамилии и инициалов на поезд, до отправления которого осталось менее 24 часов?", o:["Только при замене типа вагона","Только при замене номера поезда","Только при замене места в одном вагоне на место в другом вагоне","При замене типа вагона, номера поезда, места в вагоне или номера места в одном вагоне","В любых случаях по усмотрению кассира"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"В каком размере удерживается сбор за переоформление билета?", o:["В размере 10% от стоимости билета","В размере 20% от стоимости билета","В размере 30% от стоимости билета","В размере, установленном перевозчиком","Сбор не взимается"], c:3},
+  {s:"Глава 2 — Продажа билетов", t:"Что происходит, если переоформление билета производится на поезд или вагон более высокой категории?", o:["Пассажиру возвращается разница в стоимости","С пассажира взимается разница в стоимости","Переоформление не допускается","Пассажир должен приобрести новый билет","Пассажир должен оплатить штраф"], c:1},
+  {s:"Глава 2 — Продажа билетов", t:"В каких случаях уполномоченное лицо продлевает срок действия проездного документа (билета)?", o:["При опоздании пассажира на поезд","При желании пассажира продлить поездку","При утере билета пассажиром","При непредставлении пассажиру места в поезде, при опоздании согласованных поездов, при остановке пассажира в пути на срок не более 10 суток","В любых случаях по усмотрению уполномоченного лица"], c:3},
+  {s:"Глава 15 — Возврат платежей", t:"Из чего состоит стоимость проезда?", o:["Только из стоимости билета","Только из стоимости плацкарты","Из стоимости билета и сервисных сборов","Из стоимости плацкарты и страхового взноса","Из стоимости билета и стоимости плацкарты"], c:4},
+  {s:"Глава 15 — Возврат платежей", t:"Какой документ необходимо предъявить для возврата платежей за неиспользованный билет?", o:["Копию паспорта","Свидетельство о рождении","Паспорт гражданина Республики Казахстан пассажира","Водительское удостоверение","Любой документ, удостоверяющий личность"], c:2},
+  {s:"Глава 15 — Возврат платежей", t:"Каким образом производится возврат платежей по билетам, приобретенным по платежным картам?", o:["Наличными в кассе","На другой банковский счет пассажира","На банковский карт-счет, с которого производилась оплата","На счет мобильного телефона","На счет третьего лица"], c:2},
+  {s:"Глава 15 — Возврат платежей", t:"В какой срок до отправления поезда возвращается полная стоимость проезда?", o:["За 12 часов","За 18 часов","За 20 часов","За 24 часа или 12 часов","За 24 или 36 часов"], c:4},
+  {s:"Глава 15 — Возврат платежей", t:"Какая сумма возвращается при возврате билета менее чем за 24 часа, но не позднее 6 часов до отправления поезда?", o:["Полная стоимость билета и плацкарты","Только стоимость билета","Стоимость билета и 50% стоимости плацкарты","75% от стоимости билета","25% от стоимости проезда"], c:2},
+  {s:"Глава 15 — Возврат платежей", t:"Какая сумма возвращается при возврате билета менее чем за 6 часов до отправления и не более 1 часа после отправления поезда?", o:["Полная стоимость билета","Стоимость билета и 50% стоимости плацкарты","Только стоимость плацкарты","Стоимость билета, при этом удерживается вся стоимость плацкарты, но не более 30% от стоимости проезда","Ничего не возвращается"], c:3},
+  {s:"Глава 15 — Возврат платежей", t:"В какой срок после отправления поезда возврат билетов не производится?", o:["30 минут","1 час","2 часа","3 часа","4 часа"], c:1},
+  {s:"Глава 15 — Возврат платежей", t:"Какая сумма возвращается при возврате билетов на пригородные поезда менее чем за 24 часа, но не более 1 часа после отправления поезда?", o:["Полная стоимость проезда","50% от стоимости проезда","70% от стоимости проезда","30% от стоимости проезда","Ничего не возвращается"], c:2},
+  {s:"Глава 15 — Возврат платежей", t:"Что происходит при непредоставлении пассажиру места в поезде согласно приобретенному билету?", o:["Пассажиру предлагают доплатить за место в другом вагоне","Пассажиру предлагают ехать стоя","Пассажиру возвращаются полностью деньги за билеты","Пассажиру предлагают пересесть в вагон более высокой категории без доплаты","Пассажиру предлагают пересесть в вагон более низкой категории без возврата разницы"], c:2},
+  {s:"Глава 15 — Возврат платежей", t:"В каком случае пассажиру возвращается разница между суммой за проезд и действительной стоимостью в другом вагоне?", o:["При опоздании поезда","При отмене поезда","При предоставлении места в вагоне низшей категории","При предоставлении места в вагоне высшей категории","Во всех случаях по желанию пассажира"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Сколько суток багаж хранится бесплатно на станции назначения?", o:["1 сутки","2 суток","3 суток","4 суток","5 суток"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"С какого времени начинается отсчет бесплатных суток хранения багажа?", o:["С момента прибытия багажа","С 12:00 дня прибытия багажа","С 00:00 дня, следующего за днем прибытия багажа","С 12:00 дня, следующего за днем прибытия багажа","С момента выдачи уведомления о прибытии багажа"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Сколько суток грузобагаж хранится бесплатно на станции назначения?", o:["1 сутки","2 суток","3 суток","4 суток","5 суток"], c:0},
+  {s:"Глава 13 — Хранение багажа", t:"С какого времени начинается отсчет бесплатных суток хранения грузобагажа?", o:["С момента выгрузки грузобагажа","С 12:00 дня выгрузки грузобагажа","С 00:00 дня, следующего за днем выгрузки грузобагажа","С 12:00 дня, следующего за днем выгрузки грузобагажа","С момента выдачи уведомления о прибытии грузобагажа"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Чем определяется срок доставки грузобагажа?", o:["Желанием отправителя","Договоренностью с перевозчиком","Временем следования поезда до станции назначения","Расстоянием между станциями","Погодными условиями"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Что добавляется к сроку доставки грузобагажа при перегрузке в пути следования?", o:["12 часов на каждую перегрузку","24 часа на каждую перегрузку","36 часов на каждую перегрузку","48 часов на каждую перегрузку","60 часов на каждую перегрузку"], c:1},
+  {s:"Глава 13 — Хранение багажа", t:"В каком документе указаны причины, не зависящие от перевозчика, по которым багаж может храниться дольше?", o:["В Правилах перевозок пассажиров","В Уставе железнодорожного транспорта","В Законе о жд транспорте","В договоре перевозки","В расписании движения поездов"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Кто устанавливает порядок хранения грузобагажа после бесплатного срока?", o:["Отправитель","Получатель","Перевозчик","Начальник станции","Министерство транспорта"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Как определяется время следования поезда для расчета срока доставки грузобагажа?", o:["По желанию отправителя","По желанию получателя","Согласно расписанию движения поезда","По фактическому времени в пути","По усмотрению перевозчика"], c:2},
+  {s:"Глава 13 — Хранение багажа", t:"Что необходимо учитывать при расчете срока доставки грузобагажа, если он следует с перегрузкой?", o:["Только время следования поездов","Только время на перегрузку","Время следования поездов и время на перегрузку","Расстояние между станциями","Погодные условия"], c:2},
+];
+
+var L=['а','б','в','г','д'];
+var cur=0, ans=new Array(questions.length).fill(null);
+
+function init(){
+    buildGrid("gr0", 0, 8);
+  buildGrid("gr1", 8, 35);
+  buildGrid("gr2", 35, 45);
+  buildGrid("gr3", 45, 55);
+
+  render();
+  stats();
+
+  // Tab buttons - use addEventListener for Safari compatibility
+  document.getElementById('t0').addEventListener('click', function(){ showView('vq'); });
+  document.getElementById('t1').addEventListener('click', function(){ showView('vg'); });
+  document.getElementById('t2').addEventListener('click', function(){ calcResults(); showView('vres'); });
+  document.getElementById('bprev').addEventListener('click', function(){ if(cur>0){cur--;render();} });
+  document.getElementById('bnext').addEventListener('click', function(){ if(cur<questions.length-1){cur++;render();} });
+  document.getElementById('brestart').addEventListener('click', restart);
+  document.getElementById('breview').addEventListener('click', function(){ cur=0; render(); showView('vq'); });
+}
+
+function showView(id){
+  ['vq','vg','vres'].forEach(function(v){ document.getElementById(v).classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+  ['t0','t1','t2'].forEach(function(t){ document.getElementById(t).classList.remove('on'); });
+  if(id==='vq') document.getElementById('t0').classList.add('on');
+  if(id==='vg') document.getElementById('t1').classList.add('on');
+  if(id==='vres') document.getElementById('t2').classList.add('on');
+  document.getElementById('wrap').scrollTop=0;
+}
+
+function buildGrid(id, from, to){
+  var g=document.getElementById(id); if(!g)return;
+  g.innerHTML='';
+  for(var i=from;i<to;i++){
+    (function(idx){
+      var b=document.createElement('button');
+      b.className='qbtn'; b.textContent=idx+1; b.id='qb'+idx;
+      b.addEventListener('click', function(){ cur=idx; render(); showView('vq'); });
+      g.appendChild(b);
+    })(i);
+  }
+}
+
+function render(){
+  var q=questions[cur];
+  document.getElementById('qtag').textContent=q.s;
+  document.getElementById('qnum').textContent='Вопрос '+(cur+1)+' из '+questions.length;
+  document.getElementById('qtxt').textContent=q.t;
+  var a=ans[cur];
+  var fb=document.getElementById('fb'); fb.className='fb';
+  var cont=document.getElementById('qopts'); cont.innerHTML='';
+  for(var i=0;i<q.o.length;i++){
+    (function(i){
+      var d=document.createElement('div'); d.className='opt';
+      if(a!==null){
+        d.classList.add('dis');
+        if(i===q.c) d.classList.add(a===i?'correct':'show-correct');
+        if(a===i&&i!==q.c) d.classList.add('wrong');
+      }
+      d.innerHTML='<span class="oltr">'+L[i]+'</span><span class="otxt">'+q.o[i]+'</span>';
+      if(a===null){
+        d.addEventListener('click', function(){ pick(i); });
+      }
+      cont.appendChild(d);
+    })(i);
+  }
+  if(a!==null){
+    if(a===q.c){ fb.className='fb ok'; fb.textContent='✅ Правильно!'; }
+    else{ fb.className='fb no'; fb.innerHTML='❌ Неправильно. Правильный ответ: <strong>'+L[q.c]+') '+q.o[q.c]+'</strong>'; }
+  }
+  document.getElementById('bprev').disabled=(cur===0);
+  document.getElementById('bnext').disabled=(cur===questions.length-1);
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('cur'); });
+  var ab=document.getElementById('qb'+cur); if(ab) ab.classList.add('cur');
+  stats();
+}
+
+function pick(i){
+  if(ans[cur]!==null) return;
+  ans[cur]=i;
+  var b=document.getElementById('qb'+cur);
+  if(b){ b.classList.remove('cur'); b.classList.add(i===questions[cur].c?'ok':'no'); }
+  render();
+  var done=ans.filter(function(a){return a!==null;}).length;
+  if(done===questions.length){ setTimeout(function(){ calcResults(); showView('vres'); },1000); }
+}
+
+function stats(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  document.getElementById('ac').textContent=done;
+  document.getElementById('cc').textContent=ok;
+  document.getElementById('wc').textContent=done-ok;
+}
+
+function calcResults(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  var pct=Math.round(ok/questions.length*100);
+  document.getElementById('rsc').textContent=pct+'%';
+  document.getElementById('rsub').textContent=pct>=70?'🎉 Отлично! Вы сдали!':'📚 Нужно повторить материал';
+  document.getElementById('rok').textContent=ok;
+  document.getElementById('rno').textContent=done-ok;
+  document.getElementById('rto').textContent=questions.length;
+  document.getElementById('rpt').textContent=pct+'%';
+}
+
+function restart(){
+  ans=new Array(questions.length).fill(null);
+  cur=0;
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('ok','no'); });
+  render(); stats(); showView('vq');
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

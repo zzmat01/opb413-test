@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Тесты ПМ 12 (РО 12.1, 12.3) — ОПБ-413</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--card:#21253a;--border:#2e3350;
+  --accent:#4f8ef7;--accent2:#7c5cfc;
+  --correct:#1db96a;--cbg:#0d2e1c;
+  --wrong:#e84545;--wbg:#2c0f0f;
+  --text:#e8eaf6;--muted:#8a91b4;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;overflow:hidden;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(135deg,#141829,#1e2240);
+  border-bottom:2px solid var(--accent);
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  box-shadow:0 2px 14px rgba(79,142,247,.2);
+}
+#hdr h1{
+  font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:800;
+  background:linear-gradient(90deg,#4f8ef7,#7c5cfc);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  flex:1;
+}
+.sbadge{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:4px 10px;
+  font-size:.7rem;color:var(--muted);font-weight:600;white-space:nowrap;
+}
+.sbadge span{color:var(--text);}
+
+/* TABS */
+#tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;
+  padding:6px 4px;
+  padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));
+}
+.tbtn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--muted);
+  font-size:.58rem;font-family:'Montserrat',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;
+  padding:5px 2px;border-radius:8px;
+  cursor:pointer;
+}
+.tbtn span.ico{font-size:1.15rem;line-height:1;}
+.tbtn.on{color:var(--accent);background:rgba(79,142,247,.1);}
+
+/* SCROLL AREA */
+#wrap{
+  position:fixed;
+  top:52px;left:0;right:0;
+  bottom:calc(58px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+
+/* VIEWS */
+.view{display:none;padding:14px;}
+.view.on{display:block;}
+
+/* QUESTION */
+.qtag{font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:4px;}
+.qnum{font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:10px;font-family:'Montserrat',sans-serif;}
+.qtxt{font-family:'Montserrat',sans-serif;font-size:.98rem;font-weight:700;line-height:1.5;margin-bottom:16px;}
+.opts{display:flex;flex-direction:column;gap:9px;}
+.opt{
+  display:flex;align-items:flex-start;gap:11px;padding:13px 14px;
+  border-radius:12px;border:1.5px solid var(--border);background:var(--card);
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+.opt.correct{border-color:var(--correct)!important;background:var(--cbg)!important;}
+.opt.wrong{border-color:var(--wrong)!important;background:var(--wbg)!important;}
+.opt.show-correct{border-color:var(--correct)!important;background:rgba(29,185,106,.07)!important;}
+.opt.dis{pointer-events:none;}
+.oltr{
+  min-width:26px;height:26px;border-radius:7px;
+  background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;color:var(--muted);
+  flex-shrink:0;
+}
+.opt.correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.opt.wrong .oltr{background:var(--wrong);border-color:var(--wrong);color:#fff;}
+.opt.show-correct .oltr{background:var(--correct);border-color:var(--correct);color:#fff;}
+.otxt{font-size:.88rem;line-height:1.42;padding-top:4px;}
+.opt.correct .otxt{color:#6effa8;font-weight:600;}
+.opt.wrong .otxt{color:#ff8a8a;}
+.opt.show-correct .otxt{color:#6effa8;}
+.fb{
+  margin-top:13px;padding:11px 13px;border-radius:10px;
+  font-size:.83rem;font-weight:600;font-family:'Montserrat',sans-serif;display:none;
+}
+.fb.ok{display:block;background:var(--cbg);border:1.5px solid var(--correct);color:#6effa8;}
+.fb.no{display:block;background:var(--wbg);border:1.5px solid var(--wrong);color:#ff8a8a;}
+.navrow{display:flex;gap:10px;margin-top:18px;padding-bottom:6px;}
+.nbtn{
+  flex:1;padding:13px 10px;border-radius:10px;border:none;
+  font-family:'Montserrat',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;
+}
+.nbtn.pri{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;}
+.nbtn.sec{background:var(--card);color:var(--muted);border:1.5px solid var(--border);}
+.nbtn:disabled{opacity:.3;}
+
+/* GRID */
+.gsec{margin-bottom:18px;}
+.gsec-label{
+  font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:7px;border-bottom:1px solid var(--border);margin-bottom:9px;
+}
+.qgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.qbtn{
+  aspect-ratio:1;border:1.5px solid transparent;border-radius:7px;
+  background:var(--card);color:var(--muted);
+  font-size:.68rem;font-weight:700;cursor:pointer;
+  font-family:'Montserrat',sans-serif;
+}
+.qbtn.cur{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.12);}
+.qbtn.ok{background:var(--cbg);border-color:var(--correct);color:var(--correct);}
+.qbtn.no{background:var(--wbg);border-color:var(--wrong);color:var(--wrong);}
+
+/* RESULTS */
+#vres{text-align:center;}
+.rtitle{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.rscore{font-family:'Montserrat',sans-serif;font-size:3.8rem;font-weight:800;color:var(--correct);line-height:1;margin:14px 0;}
+.rsub{color:var(--muted);font-size:.88rem;margin-bottom:20px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.rcard{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;}
+.rcard .rn{font-size:1.8rem;font-weight:800;font-family:'Montserrat',sans-serif;}
+.rcard .rl{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.rcard.g .rn{color:var(--correct);}
+.rcard.r .rn{color:var(--wrong);}
+.ract{display:flex;flex-direction:column;gap:10px;}
+::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>ТЕСТЫ ПМ 12 (РО 12.1, 12.3) — ОПБ-413</h1>
+  <div style="display:flex;gap:5px;flex-shrink:0;">
+    <div class="sbadge"><span id="ac">0</span>/<span id="tc">58</span></div>
+    <div class="sbadge">✓<span id="cc" style="color:var(--correct)">0</span> ✗<span id="wc" style="color:var(--wrong)">0</span></div>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="vq" class="view on">
+    <div class="qtag" id="qtag"></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="qtxt" id="qtxt"></div>
+    <div class="opts" id="qopts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="navrow">
+      <button class="nbtn sec" id="bprev">← Назад</button>
+      <button class="nbtn pri" id="bnext">Вперёд →</button>
+    </div>
+  </div>
+
+  <div id="vg" class="view">
+    <div class="gsec">
+      <div class="gsec-label">АСУ и информационные системы (1–10)</div>
+      <div class="qgrid" id="gr0"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">Кодирование грузов (11–16)</div>
+      <div class="qgrid" id="gr1"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">Нумерация вагонов (17–31)</div>
+      <div class="qgrid" id="gr2"></div>
+    </div>
+    <div class="gsec">
+      <div class="gsec-label">АСОУП и сообщения (32–58)</div>
+      <div class="qgrid" id="gr3"></div>
+    </div>
+  </div>
+
+  <div id="vres" class="view">
+    <div class="rtitle">Результаты</div>
+    <div class="rscore" id="rsc"></div>
+    <div class="rsub" id="rsub"></div>
+    <div class="rgrid">
+      <div class="rcard g"><div class="rn" id="rok"></div><div class="rl">Правильных</div></div>
+      <div class="rcard r"><div class="rn" id="rno"></div><div class="rl">Неправильных</div></div>
+      <div class="rcard"><div class="rn" id="rto"></div><div class="rl">Вопросов</div></div>
+      <div class="rcard"><div class="rn" id="rpt" style="color:var(--accent)"></div><div class="rl">Результат</div></div>
+    </div>
+    <div class="ract">
+      <button class="nbtn pri" id="brestart" style="padding:14px;">Пройти заново</button>
+      <button class="nbtn sec" id="breview" style="padding:14px;">Обзор ответов</button>
+    </div>
+  </div>
+</div>
+
+<div id="tabs">
+  <button class="tbtn on" id="t0"><span class="ico">📝</span>Вопрос</button>
+  <button class="tbtn" id="t1"><span class="ico">🔢</span>Все вопросы</button>
+  <button class="tbtn" id="t2"><span class="ico">📊</span>Итоги</button>
+</div>
+
+<script>
+const questions = [
+  {s:"АСУ и информационные системы", t:"Какая технология позволяет отслеживать местоположение подвижного состава в реальном времени?", o:["Глобальная система позиционирования (GPS)","Системы радиосвязи","Системы видеонаблюдения","Системы автоматического распознавания образов","Системы электронной почты"], c:0},
+  {s:"АСУ и информационные системы", t:"Что такое информационная система железнодорожного транспорта?", o:["Совокупность технических средств и программного обеспечения, предназначенная для автоматизации бухгалтерского учета","Совокупность технических средств и программного обеспечения, предназначенная для управления движением поездов","Совокупность технических средств и программного обеспечения, предназначенная для сбора, обработки, хранения, передачи и отображения информации, необходимой для функционирования железнодорожного транспорта","Совокупность технических средств и программного обеспечения, предназначенная для обучения персонала","Совокупность технических средств и программного обеспечения, предназначенная для обеспечения безопасности движения"], c:2},
+  {s:"АСУ и информационные системы", t:"Какую роль играет информационная система в повышении безопасности движения поездов?", o:["Позволяет оперативно получать информацию о состоянии инфраструктуры","Обеспечивает контроль за соблюдением скоростных режимов","Позволяет автоматизировать процесс управления сигналами","Все перечисленные","Ни один из перечисленных"], c:3},
+  {s:"АСУ и информационные системы", t:"Какую основную цель преследует внедрение автоматизированных систем управления на железнодорожном транспорте (АСУЖТ)?", o:["Увеличение количества железнодорожных станций","Повышение эффективности управления железнодорожными перевозками","Уменьшение количества железнодорожных работников","Сокращение длины железнодорожных путей","Увеличение скорости движения поездов"], c:1},
+  {s:"АСУ и информационные системы", t:"Какая из следующих систем является частью АСУЖТ и используется для управления перевозочным процессом?", o:["Автоматизированная система управления технологическими процессами","Электронная вычислительная техника","Станционный технологический центр","Автоматизированное рабочее место","Единая сетевая разметка"], c:0},
+  {s:"АСУ и информационные системы", t:"Какая из следующих частей является основным компонентом функциональной части АСУЖТ?", o:["Техническое обеспечение","Информационное обеспечение","Программное обеспечение","Функциональные подсистемы","Математическое обеспечение"], c:3},
+  {s:"АСУ и информационные системы", t:"К какой функциональной подсистеме АСУЖТ относится задача планирования перевозок?", o:["Подсистема управления движением поездов","Подсистема коммерческого учета","Подсистема технического обслуживания","Подсистема управления персоналом","Подсистема информационного обеспечения"], c:0},
+  {s:"АСУ и информационные системы", t:"Какова основная цель кодирования железнодорожных станций?", o:["Упростить процесс строительства новых станций","Облегчить идентификацию и поиск информации о станциях","Увеличить количество станций на сети","Уменьшить длину названий станций","Сделать железнодорожную сеть более эстетичной"], c:1},
+  {s:"АСУ и информационные системы", t:"Какая система кодирования железнодорожных станций используется на постсоветском пространстве?", o:["UIC (Международный союз железных дорог)","AAR (Ассоциация американских железных дорог)","(ЕСР) Единая сетевая разметка","Система кодирования IATA (Международная ассоциация воздушного транспорта)","Система кодирования морских портов"], c:2},
+  {s:"АСУ и информационные системы", t:"Из скольких цифр состоит код станции в системе ЕСР?", o:["2","3","5","7","8"], c:2},
+  {s:"Кодирование грузов", t:"Какое значение имеет кодирование железнодорожных клиентов для автоматизированных систем управления перевозками?", o:["Позволяет упростить процесс ввода данных","Обеспечивает однозначную идентификацию клиентов","Позволяет автоматизировать процессы оформления и учета перевозок","Все ответы верны","Только А и Б"], c:3},
+  {s:"Кодирование грузов", t:"Какова основная цель кодирования грузов на железнодорожном транспорте?", o:["Упростить процесс перевозки грузов","Облегчить идентификацию и отслеживание грузов","Увеличить стоимость перевозки грузов","Уменьшить количество перевозимых грузов","Сделать железнодорожные перевозки менее безопасными"], c:1},
+  {s:"Кодирование грузов", t:"Какая система кодирования грузов применяется для международных железнодорожных перевозок?", o:["Единая тарифно-статистическая номенклатура грузов (ЕТСНГ)","Гармонизированная номенклатура грузов (ГНГ)","Система кодирования, основанная на массе груза","Система кодирования, основанная на объеме груза","Система кодирования, основанная на отправителе груза"], c:1},
+  {s:"Кодирование грузов", t:"Какова длина кодового обозначения груза по системе ГНГ?", o:["4 знака","5 знаков","6 знаков","7 знаков","8 знаков"], c:2},
+  {s:"Кодирование грузов", t:"Для чего используется контрольное число в коде груза?", o:["Для определения веса груза","Для определения объема груза","Для проверки правильности кода","Для определения стоимости перевозки","Для определения маршрута следования"], c:2},
+  {s:"Кодирование грузов", t:"Какой метод используется для расчета контрольного числа в коде груза?", o:["Метод с модулем 5","Метод с модулем 10","Метод с модулем 11","Метод с модулем 13","Метод с модулем 15"], c:2},
+  {s:"Нумерация вагонов", t:"Какую информацию несет в себе первая цифра номера вагона?", o:["Массу вагона","Длину вагона","Тип вагона","Порядковый номер вагона","Наличие тормозной системы"], c:2},
+  {s:"Нумерация вагонов", t:"Что означает вторая цифра "9" в номере вагона?", o:["Вагон восьмиосный","Вагон шестиосный","Вагон с коротким кузовом","Вагон с длинным кузовом","Вагон с открытым верхом"], c:0},
+  {s:"Нумерация вагонов", t:"Какую функцию выполняет контрольное число в номере вагона?", o:["Определяет тип груза, который может перевозиться в вагоне","Указывает на возраст вагона","Проверяет правильность считывания номера","Определяет маршрут следования вагона","Указывает на владельца вагона"], c:2},
+  {s:"Нумерация вагонов", t:"Какие цифры в номере вагона формируют его инвентарный номер?", o:["Первые две","Последние две","Первые три и четвертая, пятая, шестая","Все цифры, кроме последней","Только четные цифры"], c:2},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "7" в первой позиции номера?", o:["Пассажирский вагон","Грузовой вагон","Цистерна","Платформа","Специализированный вагон"], c:2},
+  {s:"Нумерация вагонов", t:"Какая цифра в номере вагона указывает на наличие переходной площадки?", o:["Первая","Вторая","Третья","Седьмая","Восьмая"], c:3},
+  {s:"Нумерация вагонов", t:"Для чего используется система нумерации вагонов?", o:["Для удобства пассажиров","Для оформления документов на перевозку грузов","Для идентификации и отслеживания вагонов","Для определения стоимости перевозки","Для планирования маршрутов поездов"], c:2},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "0" в первой позиции номера?", o:["Грузовой вагон","Пассажирский вагон","Цистерна","Платформа","Специализированный вагон"], c:1},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "1" в первой позиции номера?", o:["Пассажирский вагон","Локомотив, путевая машина","Цистерна","Платформа","Специализированный вагон"], c:1},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "2" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Крытый грузовой вагон","Платформа","Цистерна"], c:2},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "4" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Крытый грузовой вагон","Платформа","Цистерна"], c:3},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "6" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Крытый грузовой вагон","Платформа","Полувагон"], c:4},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "7" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Крытый грузовой вагон","Платформа","Цистерна"], c:4},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрами "3" и "9" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Специализированные вагоны","Платформа","Цистерна"], c:2},
+  {s:"Нумерация вагонов", t:"Какой тип вагона обозначается цифрой "5" в первой позиции номера?", o:["Пассажирский вагон","Локомотив","Вагон, принадлежащий грузоотправителю или грузополучателю","Платформа","Цистерна"], c:2},
+  {s:"АСОУП и сообщения", t:"Какова основная цель АСОУП?", o:["Усложнить процесс планирования перевозок","Облегчить автоматизацию процессов учета и контроля грузов","Обеспечить оперативное управление перевозочным процессом в реальном времени","Увеличить количество перевозимых грузов","Снизить скорость обработки информации"], c:2},
+  {s:"АСОУП и сообщения", t:"Какие данные обрабатываются в АСОУП?", o:["Только данные о пассажирах и грузах","Только данные о грузах","Данные о подвижном составе, грузах, маршрутах, расписаниях и т.д.","Данные о станциях","Данные о локомотивах"], c:2},
+  {s:"АСОУП и сообщения", t:"Какие преимущества дает использование АСОУП?", o:["Повышение эффективности использования подвижного состава, снижение затрат, улучшение качества обслуживания","Уменьшение количества аварий","Увеличение пропускной способности железных дорог","Усложнение работы диспетчеров","Увеличение скорости движения поездов"], c:0},
+  {s:"АСОУП и сообщения", t:"Какую роль играет база данных в структуре АСОУП?", o:["Хранит информацию о сотрудниках компании","Хранит информацию о финансовых результатах компании","Хранит информацию о производственных процессах","Хранит оперативную информацию о перевозках, подвижном составе, грузах и т.д.","Хранит информацию о клиентах компании"], c:3},
+  {s:"АСОУП и сообщения", t:"Для чего используется функция контроля движения поездов в АСОУП?", o:["Для составления расписания движения поездов","Для отслеживания местоположения поездов в реальном времени","Для планирования маршрутов движения поездов","Для расчета стоимости перевозки","Для формирования составов поездов"], c:1},
+  {s:"АСОУП и сообщения", t:"Для чего используется информация из натурного листа в АСОУП?", o:["Для составления расписания движения поездов","Для учета вагонов и контроля за их перемещением","Для расчета заработной платы железнодорожников","Для планирования ремонта подвижного состава","Для составления графика работы станций"], c:1},
+  {s:"АСОУП и сообщения", t:"Сколько знаков содержит номер грузового поезда?", o:["2","3","4","5","6"], c:2},
+  {s:"АСОУП и сообщения", t:"Какая основная цель использования индекса поезда?", o:["Указать тип груза, перевозимого поездом","Определить скорость движения поезда","Однозначно идентифицировать поезд","Указать маршрут следования поезда","Определить количество вагонов в составе"], c:2},
+  {s:"АСОУП и сообщения", t:"Сколько знаков содержит индекс поезда?", o:["4","6","8","10","12"], c:3},
+  {s:"АСОУП и сообщения", t:"Что означают первые четыре цифры индекса поезда?", o:["Код станции назначения","Код станции формирования","Номер поезда по порядку","Дата формирования поезда","Тип подвижного состава"], c:1},
+  {s:"АСОУП и сообщения", t:"На какие основные категории делятся сообщения, поступающие в АСОУП?", o:["Информационные, корректирующие, запросы","Входные, выходные, служебные","Оперативные, плановые, прогнозные","Поездные, вагонные, локомотивные","Сигнальные, информационные, управляющие"], c:0},
+  {s:"АСОУП и сообщения", t:"Что такое макет сообщения в АСОУП?", o:["Физический носитель информации","Программа для обработки сообщений","Структура сообщения, определяющая порядок следования данных","Пользовательский интерфейс системы","База данных, хранящая информацию о сообщениях"], c:2},
+  {s:"АСОУП и сообщения", t:"Какое сообщение отправляется при прибытии поезда на станцию?", o:["200","201","202","203","241"], c:1},
+  {s:"АСОУП и сообщения", t:"Какое сообщение связано с изменением состава поезда в пути следования?", o:["200","201","202","203","09"], c:4},
+  {s:"АСОУП и сообщения", t:"Какое сообщение отправляется при погрузке вагона?", o:["200","201","202","241","242"], c:3},
+  {s:"АСОУП и сообщения", t:"Какое сообщение отправляется при запросе технологических документов на поезд?", o:["200","201","202","241","213"], c:4},
+  {s:"АСОУП и сообщения", t:"Какое событие отражает сообщение с кодом 203?", o:["Отправление поезда","Прибытие поезда","Расформирование состава","Погрузка вагона","Выгрузка вагона"], c:2},
+  {s:"АСОУП и сообщения", t:"К какой категории относится сообщение с кодом 09?", o:["Информационное","Корректирующее","Запрос","Служебное","Ошибочное"], c:1},
+  {s:"АСОУП и сообщения", t:"Какое сообщение может быть использовано для отслеживания движения поезда по станции?", o:["200","201","202","241","213"], c:2},
+  {s:"АСОУП и сообщения", t:"Какое сообщение может быть использовано для контроля за выполнением грузовых операций?", o:["200, 201","241, 242","09, 213","202, 203","Все перечисленные"], c:1},
+  {s:"АСОУП и сообщения", t:"Какое сообщение может быть использовано для получения информации о состоянии подвижного состава?", o:["200","201","202","241","1353"], c:4},
+  {s:"АСОУП и сообщения", t:"Какая основная цель сообщений с кодами 213 и 212?", o:["Получение информации о состоянии поездов","Изменение данных о поездах","Управление движением поездов","Контроль за техническим состоянием путей","Планирование работы станции"], c:0},
+  {s:"АСОУП и сообщения", t:"Зачем необходимы такие сообщения в АСУСС?", o:["Для контроля за движением поездов и выполнения операций на станции","Для планирования работы станции на следующий день","Для расчета стоимости перевозок","Для составления графика движения поездов","Для ведения бухгалтерского учета"], c:0},
+  {s:"АСОУП и сообщения", t:"Какова цель автоматизации натурного листа?", o:["Снижение веса документа","Ускорение обработки информации о составе поезда","Увеличение количества копий","Улучшение дизайна документа","Сокращение количества вагонов"], c:1},
+  {s:"АСОУП и сообщения", t:"Что является основным источником данных для формирования АСОУП?", o:["Макеты сообщений, передаваемые со станций","Устные отчеты машинистов","Бумажные журналы учета","Телефонные звонки диспетчеров","Архивные данные прошлых лет"], c:0},
+  {s:"АСОУП и сообщения", t:"Какую информацию содержит индекс поезда кроме кода станции формирования?", o:["Только порядковый номер","Только дату","Код станции назначения и порядковый номер","Вес поезда и количество осей","ФИО машиниста"], c:2},
+  {s:"АСОУП и сообщения", t:"Какое преимущество дает использование контрольного числа в номере вагона?", o:["Позволяет узнать год выпуска","Указывает на грузоподъемность","Позволяет автоматически обнаружить ошибки при ручном вводе или сканировании","Определяет цвет вагона","Указывает на станцию приписки"], c:2},
+];
+
+var L=['а','б','в','г','д'];
+var cur=0, ans=new Array(questions.length).fill(null);
+
+function init(){
+    buildGrid("gr0", 0, 10);
+  buildGrid("gr1", 10, 16);
+  buildGrid("gr2", 16, 31);
+  buildGrid("gr3", 31, 58);
+
+  render();
+  stats();
+
+  // Tab buttons - use addEventListener for Safari compatibility
+  document.getElementById('t0').addEventListener('click', function(){ showView('vq'); });
+  document.getElementById('t1').addEventListener('click', function(){ showView('vg'); });
+  document.getElementById('t2').addEventListener('click', function(){ calcResults(); showView('vres'); });
+  document.getElementById('bprev').addEventListener('click', function(){ if(cur>0){cur--;render();} });
+  document.getElementById('bnext').addEventListener('click', function(){ if(cur<questions.length-1){cur++;render();} });
+  document.getElementById('brestart').addEventListener('click', restart);
+  document.getElementById('breview').addEventListener('click', function(){ cur=0; render(); showView('vq'); });
+}
+
+function showView(id){
+  ['vq','vg','vres'].forEach(function(v){ document.getElementById(v).classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+  ['t0','t1','t2'].forEach(function(t){ document.getElementById(t).classList.remove('on'); });
+  if(id==='vq') document.getElementById('t0').classList.add('on');
+  if(id==='vg') document.getElementById('t1').classList.add('on');
+  if(id==='vres') document.getElementById('t2').classList.add('on');
+  document.getElementById('wrap').scrollTop=0;
+}
+
+function buildGrid(id, from, to){
+  var g=document.getElementById(id); if(!g)return;
+  g.innerHTML='';
+  for(var i=from;i<to;i++){
+    (function(idx){
+      var b=document.createElement('button');
+      b.className='qbtn'; b.textContent=idx+1; b.id='qb'+idx;
+      b.addEventListener('click', function(){ cur=idx; render(); showView('vq'); });
+      g.appendChild(b);
+    })(i);
+  }
+}
+
+function render(){
+  var q=questions[cur];
+  document.getElementById('qtag').textContent=q.s;
+  document.getElementById('qnum').textContent='Вопрос '+(cur+1)+' из '+questions.length;
+  document.getElementById('qtxt').textContent=q.t;
+  var a=ans[cur];
+  var fb=document.getElementById('fb'); fb.className='fb';
+  var cont=document.getElementById('qopts'); cont.innerHTML='';
+  for(var i=0;i<q.o.length;i++){
+    (function(i){
+      var d=document.createElement('div'); d.className='opt';
+      if(a!==null){
+        d.classList.add('dis');
+        if(i===q.c) d.classList.add(a===i?'correct':'show-correct');
+        if(a===i&&i!==q.c) d.classList.add('wrong');
+      }
+      d.innerHTML='<span class="oltr">'+L[i]+'</span><span class="otxt">'+q.o[i]+'</span>';
+      if(a===null){
+        d.addEventListener('click', function(){ pick(i); });
+      }
+      cont.appendChild(d);
+    })(i);
+  }
+  if(a!==null){
+    if(a===q.c){ fb.className='fb ok'; fb.textContent='✅ Правильно!'; }
+    else{ fb.className='fb no'; fb.innerHTML='❌ Неправильно. Правильный ответ: <strong>'+L[q.c]+') '+q.o[q.c]+'</strong>'; }
+  }
+  document.getElementById('bprev').disabled=(cur===0);
+  document.getElementById('bnext').disabled=(cur===questions.length-1);
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('cur'); });
+  var ab=document.getElementById('qb'+cur); if(ab) ab.classList.add('cur');
+  stats();
+}
+
+function pick(i){
+  if(ans[cur]!==null) return;
+  ans[cur]=i;
+  var b=document.getElementById('qb'+cur);
+  if(b){ b.classList.remove('cur'); b.classList.add(i===questions[cur].c?'ok':'no'); }
+  render();
+  var done=ans.filter(function(a){return a!==null;}).length;
+  if(done===questions.length){ setTimeout(function(){ calcResults(); showView('vres'); },1000); }
+}
+
+function stats(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  document.getElementById('ac').textContent=done;
+  document.getElementById('cc').textContent=ok;
+  document.getElementById('wc').textContent=done-ok;
+}
+
+function calcResults(){
+  var done=ans.filter(function(a){return a!==null;}).length;
+  var ok=ans.filter(function(a,i){return a!==null&&a===questions[i].c;}).length;
+  var pct=Math.round(ok/questions.length*100);
+  document.getElementById('rsc').textContent=pct+'%';
+  document.getElementById('rsub').textContent=pct>=70?'🎉 Отлично! Вы сдали!':'📚 Нужно повторить материал';
+  document.getElementById('rok').textContent=ok;
+  document.getElementById('rno').textContent=done-ok;
+  document.getElementById('rto').textContent=questions.length;
+  document.getElementById('rpt').textContent=pct+'%';
+}
+
+function restart(){
+  ans=new Array(questions.length).fill(null);
+  cur=0;
+  document.querySelectorAll('.qbtn').forEach(function(b){ b.classList.remove('ok','no'); });
+  render(); stats(); showView('vq');
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
